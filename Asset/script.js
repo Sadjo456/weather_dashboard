@@ -1,13 +1,13 @@
 var APIKey = '9ef870d39d3f42dc1045c977c074e6bb';
 var city = "New York";
 // Grabs the current time and date
-var date = moment().format('dddd, MMMM Do YYYY');
-var dateTime = moment().format('YYYY-MM-DD HH:MM:SS');
+var day = moment().format('dddd, MMMM Do YYYY');
+var timeDay = moment().format('YYYY-MM-DD HH:MM:SS');
 
 var cityList = [];
 $('.search').on('click', function (event) {
     event.preventDefault();
-    city = $(this).parent('.btnPar').siblings('.textVal').val().trim(); 
+    city = $(this).parent('.btnOn').siblings('.textVal').val().trim(); 
     if (city === "") {
         return;
     };
@@ -15,27 +15,27 @@ $('.search').on('click', function (event) {
 
     localStorage.setItem('city', JSON.stringify(cityList));
     fiveForecastEl.empty();
-    getHistory();
-    getWeatherToday();
+    getHist();
+    getWeather();
      
 });
 
 // Create buttons based on search
 
-var conHistEl = $('.cityList');
-function getHistory() {
-    conHistEl.empty();
+var conHtEl = $('.cityList');
+function getHist() {
+    conHtEl.empty();
 
     for (let i = 0; i < cityList.length; i++) {
-        var rowEl = $('<row>');
-        var btnEl = $('<button>').text(`${cityList[i]}`);
+        var rowElmt = $('<row>');
+        var btnElmt = $('<button>').text(`${cityList[i]}`);
 
-        rowEl.addClass('row histBtnRow');
-        btnEl.addClass('btn btn-outline-secondary histBtn');
-        btnEl.attr('type', 'button');
+        rowElmt.addClass('row histBtnRow');
+        btnElmt.addClass('btn btn-outline-secondary histBtn');
+        btnElmt.attr('type', 'button');
 
-        conHistEl.prepend(rowEl);
-        rowEl.append(btnEl);
+        conHtEl.prepend(rowElmt);
+        rowElmt.append(btnElmt);
     }   if (!city) {
         return;
     }
@@ -44,39 +44,39 @@ function getHistory() {
         event.preventDefault();
         city = $(this).text();
         fiveForecastEl.empty();
-        getWeatherToday();
+        getWeather();
     });
 };
 
 // Grab the main 'Today' card body
-var cardTodayBody = $('.cardBodyToday')
+var cardBody = $('.cardBody')
 //Applies the weather data to the today card and then launches the five day forecast
-function getWeatherToday() {
+function getWeather() {
     var getUrlCurrent = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${APIKey}`;
 
-    $(cardTodayBody).empty();
+    $(cardBody).empty();
 
     $.ajax({
         url: getUrlCurrent,
         method: 'GET',
     }).then(function (response) {
         
-        $('.cardTodayCityName').text(response.name);
-        $('.cardTodayDate').text(date);
+        $('.cardCityName').text(response.name);
+        $('.cardDate').text(day);
         //Icons
         $('.icons').attr('src', `https://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`);
         // Temperature
         var pEl = $('<p>').text(`Temperature: ${response.main.temp} °F`);
-        cardTodayBody.append(pEl);
+        cardyBody.append(pEl);
         // Feels like
-        var pElTemp = $('<p>').text(`Feels Like: ${response.main.feels_like} °F`);
-        cardTodayBody.append(pElTemp);
+        var pElTep = $('<p>').text(`Feels Like: ${response.main.feels_like} °F`);
+        cardyBody.append(pElTep);
         // Humidity
-        var pELHumid = $('<p>').text(`Humidity: ${response.main.humidity} %`);
-        cardTodayBody.append(pELHumid);
+        var pELHd = $('<p>').text(`Humidity: ${response.main.humidity} %`);
+        cardBody.append(pELHd);
         // Wind speed
         var pElWind = $('<p>').text(`Wind Speed: ${response.wind.speed} MPH`);
-        cardTodayBody.append(pElWind);
+        cardyBody.append(pElWind);
         // Set the lat and long from the searched city
         var cityLongitude = response.coord.lon;
         var cityLatitude = response.coor.lat;
@@ -91,7 +91,7 @@ function getWeatherToday() {
             var uviSpan = $('<span>').text(response.current.uvi);
             var uvi = response.current.uvi;
             pElUvi.append(uviSpan);
-            cardTodayBody.append(pElUvi);
+            cardyBody.append(pElUvi);
             // Set the UV index to match an exposure chart severity based on color
             if (uvi >= 0 && uvi <= 2) {
                 uviSpan.attr('class', 'gren');
@@ -106,12 +106,12 @@ function getWeatherToday() {
             }
         });
     });
-     getFiveDayForecast();
+     getFiveDay();
 };
 
-var fiveForecastEl = $('.fiveForecast');
+var fiveForecastEl = $('.forecast');
 
-function getFiveDayForecast(fiveDayArray) {
+function getFiveDay() {
      var getUrlFiveDay = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${APIKey}`;
 
      $.ajax({
@@ -184,8 +184,8 @@ function getFiveDayForecast(fiveDayArray) {
      if (citylistStore !== null) {
          cityList = citylistStore
      }
-     getHistory();
-     getWeatherToday();
+     getHist();
+     getWeather();
 };
 
  initload();
